@@ -1,18 +1,25 @@
-# Salesforce DX Project: Next Steps
+# Apex Discovery Triggers
 
-Now that you’ve created a Salesforce DX project, what’s next? Here are some documentation resources to get you started.
+This trigger handler framework discovers classes that implement trigger handlers by querying `ApexTypeImplementor`.
 
-## How Do You Plan to Deploy Your Changes?
+This provides a slim trigger framework, with ordering, that does not require custom metadata or any other type of table
+to drive the triggers. 
 
-Do you want to deploy a set of changes, or create a self-contained application? Choose a [development model](https://developer.salesforce.com/tools/vscode/en/user-guide/development-models).
+Here is an example trigger implementation:
 
-## Configure Your Salesforce DX Project
+```apex
+public class MyTrigger implements BeforeInsert {
 
-The `sfdx-project.json` file contains useful configuration information for your project. See [Salesforce DX Project Configuration](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_ws_config.htm) in the _Salesforce DX Developer Guide_ for details about this file.
+    public Integer getOrder() {
+        return 0;
+    }
 
-## Read All About It
+    public Boolean canHandle(SObjectType type) {
+        return type == Account.SObjectType;
+    }
 
-- [Salesforce Extensions Documentation](https://developer.salesforce.com/tools/vscode/)
-- [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
-- [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
-- [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+    public void handleBeforeInsert(List<Account> newRecords) {
+        // do something
+    }
+}
+```
