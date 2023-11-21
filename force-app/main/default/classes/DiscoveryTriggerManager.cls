@@ -23,11 +23,22 @@ public without sharing class DiscoveryTriggerManager {
             'AfterDelete' => TriggerOperation.AFTER_DELETE,
             'AfterUndelete' => TriggerOperation.AFTER_UNDELETE
     };
-
+    
+    private static Map<SObjectType, DiscoveryTriggerManager> sObjectTypeToTriggerManager = new Map<SObjectType, DiscoveryTriggerManager>();
     private Map<TriggerOperation, List<TriggerHandler>> triggerOperationToHandlers = new Map<TriggerOperation, List<TriggerHandler>>();
     
-    public DiscoveryTriggerManager(SObjectType sObjectType) {
-
+    public static DiscoveryTriggerManager getInstance(SObjectType sObjectType) {
+        DiscoveryTriggerManager triggerManager = sObjectTypeToTriggerManager.get(sObjectType);
+        if(triggerManager == null) {
+            triggerManager = new DiscoveryTriggerManager(sObjectType);
+            sObjectTypeToTriggerManager.put(sObjectType, triggerManager);
+        }
+        return triggerManager;
+    }
+    
+    private DiscoveryTriggerManager(SObjectType sObjectType) {
+        List<ApexTypeImplementor> remainingImplementors = new List<ApexTypeImplementor>();
+        
         for(ApexTypeImplementor thisApexTypeImplementor : allImplementors) {
             TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
             TriggerOperation thisTriggerOperation = interfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
@@ -39,8 +50,12 @@ public without sharing class DiscoveryTriggerManager {
                     triggerOperationToHandlers.put(thisTriggerOperation, handlers);
                 }
                 handlers.add(triggerHandler);
+            } else {
+                remainingImplementors.add(thisApexTypeImplementor);
             }
         }
+        
+        allImplementors= remainingImplementors;
         
         for(TriggerOperation thisTriggerOperation : triggerOperationToHandlers.keySet()) {
             List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
