@@ -6,9 +6,17 @@
 public without sharing class DiscoveryTriggerManager {
 
     private static List<ApexTypeImplementor> allImplementors = [
-            SELECT Id, ClassName, InterfaceName 
+            SELECT Id, ClassName, InterfaceName
             FROM ApexTypeImplementor 
-            WHERE InterfaceName IN ('BeforeInsert', 'BeforeUpdate')
+            WHERE InterfaceName IN (
+                    :BeforeInsert.class.getName(), 
+                    :BeforeUpdate.class.getName(),
+                    :BeforeDelete.class.getName(),
+                    :AfterInsert.class.getName(),
+                    :AfterUpdate.class.getName(),
+                    :AfterDelete.class.getName(),
+                    :AfterUndelete.class.getName()
+            )
             AND ApexClass.IsValid = TRUE
             AND IsConcrete = TRUE
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
@@ -73,21 +81,21 @@ public without sharing class DiscoveryTriggerManager {
             when BEFORE_INSERT {
                 ((BeforeInsert)handlerInstance).handleBeforeInsert(triggerContext.newList);
             }
-//            when BEFORE_DELETE {
-//                ((BeforeDelete)handlerInstance).handleBeforeDelete(oldList);
-//            }
-//            when AFTER_UPDATE {
-//                ((AfterUpdate)handlerInstance).handleAfterUpdate(oldList, newList);
-//            }
-//            when AFTER_INSERT {
-//                ((AfterInsert)handlerInstance).handleAfterInsert(newList);
-//            }
-//            when AFTER_DELETE {
-//                ((AfterDelete)handlerInstance).handleAfterDelete(oldList);
-//            }
-//            when AFTER_UNDELETE {
-//                ((AfterUndelete)handlerInstance).handleAfterUndelete(newList);
-//            }
+            when BEFORE_DELETE {
+                ((BeforeDelete)handlerInstance).handleBeforeDelete(triggerContext.oldList);
+            }
+            when AFTER_UPDATE {
+                ((AfterUpdate)handlerInstance).handleAfterUpdate(triggerContext.oldList, triggerContext.newList);
+            }
+            when AFTER_INSERT {
+                ((AfterInsert)handlerInstance).handleAfterInsert(triggerContext.newList);
+            }
+            when AFTER_DELETE {
+                ((AfterDelete)handlerInstance).handleAfterDelete(triggerContext.oldList);
+            }
+            when AFTER_UNDELETE {
+                ((AfterUndelete)handlerInstance).handleAfterUndelete(triggerContext.newList);
+            }
         }
     }
     
