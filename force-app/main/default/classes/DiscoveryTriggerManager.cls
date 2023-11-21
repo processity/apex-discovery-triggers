@@ -5,7 +5,7 @@
 
 public without sharing class DiscoveryTriggerManager {
 
-    static List<ApexTypeImplementor> allImplementors = [
+    private static List<ApexTypeImplementor> allImplementors = [
             SELECT Id, ClassName, InterfaceName 
             FROM ApexTypeImplementor 
             WHERE InterfaceName IN ('BeforeInsert', 'BeforeUpdate')
@@ -13,16 +13,6 @@ public without sharing class DiscoveryTriggerManager {
             AND IsConcrete = TRUE
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
-    
-    static Map<String, TriggerOperation> interfaceNameToTriggerOperation = new Map<String, TriggerOperation> {
-            'BeforeInsert' => TriggerOperation.BEFORE_INSERT,
-            'BeforeUpdate' => TriggerOperation.BEFORE_UPDATE,
-            'BeforeDelete' => TriggerOperation.BEFORE_DELETE,
-            'AfterInsert' => TriggerOperation.AFTER_INSERT,
-            'AfterUpdate' => TriggerOperation.AFTER_UPDATE,
-            'AfterDelete' => TriggerOperation.AFTER_DELETE,
-            'AfterUndelete' => TriggerOperation.AFTER_UNDELETE
-    };
     
     private static Map<SObjectType, DiscoveryTriggerManager> sObjectTypeToTriggerManager = new Map<SObjectType, DiscoveryTriggerManager>();
     private Map<TriggerOperation, List<TriggerHandler>> triggerOperationToHandlers = new Map<TriggerOperation, List<TriggerHandler>>();
@@ -41,7 +31,7 @@ public without sharing class DiscoveryTriggerManager {
         
         for(ApexTypeImplementor thisApexTypeImplementor : allImplementors) {
             TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
-            TriggerOperation thisTriggerOperation = interfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
+            TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
             
             if(triggerHandler.getSObjectType() == sObjectType) {
                 List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
@@ -55,7 +45,7 @@ public without sharing class DiscoveryTriggerManager {
             }
         }
         
-        allImplementors= remainingImplementors;
+        allImplementors = remainingImplementors;
         
         for(TriggerOperation thisTriggerOperation : triggerOperationToHandlers.keySet()) {
             List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
@@ -75,7 +65,7 @@ public without sharing class DiscoveryTriggerManager {
         }
     }
 
-    private void handleInstance(TriggerHandler handlerInstance, TriggerContext triggerContext) {
+    private static void handleInstance(TriggerHandler handlerInstance, TriggerContext triggerContext) {
         switch on triggerContext.operation {
             when BEFORE_UPDATE {
                 ((BeforeUpdate)handlerInstance).handleBeforeUpdate(triggerContext.oldList, triggerContext.newList);
