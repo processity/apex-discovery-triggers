@@ -6,7 +6,7 @@
 public without sharing class DiscoveryTriggerManager {
 
     private static List<ApexTypeImplementor> allImplementors = [
-            SELECT Id, ClassName, InterfaceName
+            SELECT ClassName, InterfaceName
             FROM ApexTypeImplementor 
             WHERE InterfaceName IN (
                     :BeforeInsert.class.getName(), 
@@ -57,7 +57,7 @@ public without sharing class DiscoveryTriggerManager {
         
         for(TriggerOperation thisTriggerOperation : triggerOperationToHandlers.keySet()) {
             List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
-            handlers.sort(new TypeImplementorComparator());
+            handlers.sort(new SortTriggerHandlersByOrder());
         }
     }
     public void handle() {
@@ -69,52 +69,13 @@ public without sharing class DiscoveryTriggerManager {
         
         Integer size = triggerHandlers?.size();
         for(Integer i=0; i < size; i++) {
-            handleInstance(triggerHandlers[i], triggerContext);
-        }
-    }
-
-    private static void handleInstance(TriggerHandler handlerInstance, TriggerContext triggerContext) {
-        switch on triggerContext.operation {
-            when BEFORE_UPDATE {
-                ((BeforeUpdate)handlerInstance).handleBeforeUpdate(triggerContext.oldList, triggerContext.newList);
-            }
-            when BEFORE_INSERT {
-                ((BeforeInsert)handlerInstance).handleBeforeInsert(triggerContext.newList);
-            }
-            when BEFORE_DELETE {
-                ((BeforeDelete)handlerInstance).handleBeforeDelete(triggerContext.oldList);
-            }
-            when AFTER_UPDATE {
-                ((AfterUpdate)handlerInstance).handleAfterUpdate(triggerContext.oldList, triggerContext.newList);
-            }
-            when AFTER_INSERT {
-                ((AfterInsert)handlerInstance).handleAfterInsert(triggerContext.newList);
-            }
-            when AFTER_DELETE {
-                ((AfterDelete)handlerInstance).handleAfterDelete(triggerContext.oldList);
-            }
-            when AFTER_UNDELETE {
-                ((AfterUndelete)handlerInstance).handleAfterUndelete(triggerContext.newList);
-            }
+            triggerContext.handleUsing(triggerHandlers[i]);
         }
     }
     
-    private class TypeImplementorComparator implements Comparator<TriggerHandler> {
+    private class SortTriggerHandlersByOrder implements Comparator<TriggerHandler> {
         public Integer compare(TriggerHandler left, TriggerHandler right) {
             return left.getOrder() - right.getOrder();
-        }
-    }
-    
-    private class TriggerContext {
-        
-        public TriggerOperation operation;
-        public List<SObject> oldList;
-        public List<SObject> newList;
-        
-        public TriggerContext(TriggerOperation operation, List<SObject> oldList, List<SObject> newList) {
-            this.operation = operation;
-            this.oldList = oldList;
-            this.newList = newList;
         }
     }
 }
