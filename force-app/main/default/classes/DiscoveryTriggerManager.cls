@@ -26,13 +26,13 @@ public without sharing class DiscoveryTriggerManager {
 
     private Map<TriggerOperation, List<TriggerHandler>> triggerOperationToHandlers = new Map<TriggerOperation, List<TriggerHandler>>();
     
-    public DiscoveryTriggerManager(SObjectType objectType) {
+    public DiscoveryTriggerManager(SObjectType sObjectType) {
 
         for(ApexTypeImplementor thisApexTypeImplementor : allImplementors) {
             TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
             TriggerOperation thisTriggerOperation = interfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
             
-            if(triggerHandler.canHandle(objectType)) {
+            if(triggerHandler.getSObjectType() == sObjectType) {
                 List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
                 if (handlers == null) {
                     handlers = new List<TriggerHandler>();

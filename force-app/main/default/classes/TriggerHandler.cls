@@ -5,5 +5,5 @@
 
 public interface TriggerHandler {
     Integer getOrder();
-    Boolean canHandle(SObjectType sObjectType);
+    SObjectType getSObjectType();
 }

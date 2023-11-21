@@ -16,7 +16,7 @@ public with sharing class AccountNameAddFoo implements BeforeInsert {
         return 0;
     }
     
-    public Boolean canHandle(SObjectType type) {
-        return type == Account.SObjectType;
+    public SObjectType getSObjectType() {
+        return Account.SObjectType;
     }
 }
