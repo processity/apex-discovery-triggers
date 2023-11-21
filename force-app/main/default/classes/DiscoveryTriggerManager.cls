@@ -9,6 +9,8 @@ public without sharing class DiscoveryTriggerManager {
             SELECT Id, ClassName, InterfaceName 
             FROM ApexTypeImplementor 
             WHERE InterfaceName IN ('BeforeInsert', 'BeforeUpdate')
+            AND ApexClass.IsValid = TRUE
+            AND IsConcrete = TRUE
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
     
