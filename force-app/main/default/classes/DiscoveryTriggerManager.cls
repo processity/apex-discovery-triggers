@@ -5,6 +5,7 @@
 
 public without sharing class DiscoveryTriggerManager {
 
+    @TestVisible
     private static List<ApexTypeImplementor> allImplementors = [
             SELECT ClassName, InterfaceName
             FROM ApexTypeImplementor 
@@ -19,6 +20,7 @@ public without sharing class DiscoveryTriggerManager {
             )
             AND ApexClass.IsValid = TRUE
             AND IsConcrete = TRUE
+            AND (NOT(ClassName LIKE : DiscoveryTriggerManagerTest.class.getName() + '.%')) 
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
     
