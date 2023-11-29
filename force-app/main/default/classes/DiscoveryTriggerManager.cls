@@ -39,7 +39,9 @@ public without sharing class DiscoveryTriggerManager {
     private DiscoveryTriggerManager(SObjectType sObjectType) {
         List<ApexTypeImplementor> remainingImplementors = new List<ApexTypeImplementor>();
         
-        for(ApexTypeImplementor thisApexTypeImplementor : allImplementors) {
+        Integer allImplementorsSize = allImplementors.size();
+        for(Integer i=0; i < allImplementorsSize; i++) {
+            ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
             TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
             TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
             
@@ -69,8 +71,8 @@ public without sharing class DiscoveryTriggerManager {
     public void handle(TriggerContext triggerContext) {
         List<TriggerHandler> triggerHandlers = triggerOperationToHandlers.get(triggerContext.operation);
         
-        Integer size = triggerHandlers?.size();
-        for(Integer i=0; i < size; i++) {
+        Integer triggerHandlersSize = triggerHandlers?.size();
+        for(Integer i=0; i < triggerHandlersSize; i++) {
             triggerContext.handleUsing(triggerHandlers[i]);
         }
     }
