@@ -39,17 +39,14 @@ public without sharing class DiscoveryTriggerManager {
     private DiscoveryTriggerManager(SObjectType sObjectType) {
         List<ApexTypeImplementor> remainingImplementors = new List<ApexTypeImplementor>();
         
-        for(ApexTypeImplementor thisApexTypeImplementor : allImplementors) {
+        Integer allImplementorsSize = allImplementors.size();
+        for(Integer i=0; i < allImplementorsSize; i++) {
+            ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
             TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
             TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
             
             if(triggerHandler.getSObjectType() == sObjectType) {
-                List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
-                if (handlers == null) {
-                    handlers = new List<TriggerHandler>();
-                    triggerOperationToHandlers.put(thisTriggerOperation, handlers);
-                }
-                handlers.add(triggerHandler);
+                addHandler(thisTriggerOperation, triggerHandler);
             } else {
                 remainingImplementors.add(thisApexTypeImplementor);
             }
@@ -62,6 +59,16 @@ public without sharing class DiscoveryTriggerManager {
             handlers.sort(new SortTriggerHandlersByOrder());
         }
     }
+
+    private void addHandler(TriggerOperation thisTriggerOperation, TriggerHandler triggerHandler) {
+        List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
+        if (handlers == null) {
+            handlers = new List<TriggerHandler>();
+            triggerOperationToHandlers.put(thisTriggerOperation, handlers);
+        }
+        handlers.add(triggerHandler);
+    }
+    
     public void handle() {
         handle(new TriggerContext(Trigger.operationType, Trigger.old, Trigger.new));
     }
@@ -69,8 +76,8 @@ public without sharing class DiscoveryTriggerManager {
     public void handle(TriggerContext triggerContext) {
         List<TriggerHandler> triggerHandlers = triggerOperationToHandlers.get(triggerContext.operation);
         
-        Integer size = triggerHandlers?.size();
-        for(Integer i=0; i < size; i++) {
+        Integer triggerHandlersSize = triggerHandlers?.size();
+        for(Integer i=0; i < triggerHandlersSize; i++) {
             triggerContext.handleUsing(triggerHandlers[i]);
         }
     }
