@@ -62,10 +62,6 @@ public class DiscoveryTriggerManagerTest {
     }
 
     public class TestHandlerAccount implements BeforeInsert, BeforeUpdate, BeforeDelete, AfterInsert, AfterUpdate, AfterDelete, AfterUndelete {
-        public Integer getOrder() {
-            return 0;
-        }
-
         public SObjectType getSObjectType() {
             return Account.SObjectType;
         }
@@ -99,7 +95,7 @@ public class DiscoveryTriggerManagerTest {
         }
     }
 
-    public class TestHandlerContactOne implements BeforeInsert {
+    public class TestHandlerContactOne implements BeforeInsert, OrderedTriggerHandler {
         public Integer getOrder() {
             return DiscoveryTriggerManagerTest.testHandlerContactOneOrder;
         }
@@ -113,7 +109,7 @@ public class DiscoveryTriggerManagerTest {
         }
     }
     
-    public class TestHandlerContactTwo implements BeforeInsert {
+    public class TestHandlerContactTwo implements BeforeInsert, OrderedTriggerHandler {
         public Integer getOrder() {
             return DiscoveryTriggerManagerTest.testHandlerContactTwoOrder;
         }

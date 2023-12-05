@@ -84,7 +84,9 @@ public without sharing class DiscoveryTriggerManager {
     
     private class SortTriggerHandlersByOrder implements Comparator<TriggerHandler> {
         public Integer compare(TriggerHandler left, TriggerHandler right) {
-            return left.getOrder() - right.getOrder();
+            Integer leftOrder = left instanceof OrderedTriggerHandler ? ((OrderedTriggerHandler)left).getOrder() : 0;
+            Integer rightOrder = right instanceof OrderedTriggerHandler ? ((OrderedTriggerHandler)right).getOrder() : 0;
+            return leftOrder - rightOrder;
         }
     }
 }

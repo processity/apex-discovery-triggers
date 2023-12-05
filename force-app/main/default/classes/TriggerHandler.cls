@@ -4,6 +4,5 @@
  */
 
 public interface TriggerHandler {
-    Integer getOrder();
     SObjectType getSObjectType();
 }
