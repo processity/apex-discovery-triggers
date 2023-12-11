@@ -1,6 +1,8 @@
 /**
  * @author aidan@mantratech.uk
  * @date 20/11/2023
+ * @description Entry point for the trigger framework. This factory class returns a DiscoveryTriggerHandler instance 
+ * for a given SObjectType, using ApexTypeImplementor to discover all trigger handlers in the org.
  */
 
 public without sharing class DiscoveryTriggerManager {
@@ -24,69 +26,33 @@ public without sharing class DiscoveryTriggerManager {
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
     
-    private static Map<SObjectType, DiscoveryTriggerManager> sObjectTypeToTriggerManager = new Map<SObjectType, DiscoveryTriggerManager>();
-    private Map<TriggerOperation, List<TriggerHandler>> triggerOperationToHandlers = new Map<TriggerOperation, List<TriggerHandler>>();
+    private static Map<SObjectType, DiscoveryTriggerHandler> sObjectTypeToDiscoveryTriggerHandler;
     
-    public static DiscoveryTriggerManager getInstance(SObjectType sObjectType) {
-        DiscoveryTriggerManager triggerManager = sObjectTypeToTriggerManager.get(sObjectType);
-        if(triggerManager == null) {
-            triggerManager = new DiscoveryTriggerManager(sObjectType);
-            sObjectTypeToTriggerManager.put(sObjectType, triggerManager);
-        }
-        return triggerManager;
-    }
-    
-    private DiscoveryTriggerManager(SObjectType sObjectType) {
-        List<ApexTypeImplementor> remainingImplementors = new List<ApexTypeImplementor>();
+    public static DiscoveryTriggerHandler getInstance(SObjectType sObjectType) {
         
-        Integer allImplementorsSize = allImplementors.size();
-        for(Integer i=0; i < allImplementorsSize; i++) {
-            ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
-            TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
-            TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
-            
-            if(triggerHandler.getSObjectType() == sObjectType) {
-                addHandler(thisTriggerOperation, triggerHandler);
-            } else {
-                remainingImplementors.add(thisApexTypeImplementor);
+        if(sObjectTypeToDiscoveryTriggerHandler == null) {
+            sObjectTypeToDiscoveryTriggerHandler = new Map<SObjectType, DiscoveryTriggerHandler>();
+
+            Integer allImplementorsSize = allImplementors.size();
+
+            for(Integer i=0; i < allImplementorsSize; i++) {
+                ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
+                TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
+                TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
+
+                DiscoveryTriggerHandler thisDiscoveryTriggerHandler = sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
+                if(thisDiscoveryTriggerHandler == null) {
+                    thisDiscoveryTriggerHandler = new DiscoveryTriggerHandler();
+                    sObjectTypeToDiscoveryTriggerHandler.put(sObjectType, thisDiscoveryTriggerHandler);
+                }
+                thisDiscoveryTriggerHandler.addHandler(thisTriggerOperation, triggerHandler);
+            }
+
+            for(DiscoveryTriggerHandler thisDiscoveryTriggerHandler : sObjectTypeToDiscoveryTriggerHandler.values()) {
+                thisDiscoveryTriggerHandler.sort();
             }
         }
         
-        allImplementors = remainingImplementors;
-        
-        for(TriggerOperation thisTriggerOperation : triggerOperationToHandlers.keySet()) {
-            List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
-            handlers.sort(new SortTriggerHandlersByOrder());
-        }
-    }
-
-    private void addHandler(TriggerOperation thisTriggerOperation, TriggerHandler triggerHandler) {
-        List<TriggerHandler> handlers = triggerOperationToHandlers.get(thisTriggerOperation);
-        if (handlers == null) {
-            handlers = new List<TriggerHandler>();
-            triggerOperationToHandlers.put(thisTriggerOperation, handlers);
-        }
-        handlers.add(triggerHandler);
-    }
-    
-    public void handle() {
-        handle(new TriggerContext(Trigger.operationType, Trigger.old, Trigger.new));
-    }
-    
-    public void handle(TriggerContext triggerContext) {
-        List<TriggerHandler> triggerHandlers = triggerOperationToHandlers.get(triggerContext.operation);
-        
-        Integer triggerHandlersSize = triggerHandlers?.size();
-        for(Integer i=0; i < triggerHandlersSize; i++) {
-            triggerContext.handleUsing(triggerHandlers[i]);
-        }
-    }
-    
-    private class SortTriggerHandlersByOrder implements Comparator<TriggerHandler> {
-        public Integer compare(TriggerHandler left, TriggerHandler right) {
-            Integer leftOrder = left instanceof OrderedTriggerHandler ? ((OrderedTriggerHandler)left).getOrder() : 0;
-            Integer rightOrder = right instanceof OrderedTriggerHandler ? ((OrderedTriggerHandler)right).getOrder() : 0;
-            return leftOrder - rightOrder;
-        }
+        return sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
     }
 }
