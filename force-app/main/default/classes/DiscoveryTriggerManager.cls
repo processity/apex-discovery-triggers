@@ -26,6 +26,8 @@ public without sharing class DiscoveryTriggerManager {
                 for(Integer i=0; i < interfaceNames.size(); i++) {
                     interfaceNames[i] = interfaceNames[i].substring(start);
                 }
+            } else {
+                namespacePrefix = null;
             }
         }
         return interfaceNames;
@@ -56,7 +58,9 @@ public without sharing class DiscoveryTriggerManager {
             for(Integer i=0; i < allImplementorsSize; i++) {
                 ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
                 TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassNamespacePrefix, thisApexTypeImplementor.ClassName).newInstance();
-                TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceNamespacePrefix + '.' + thisApexTypeImplementor.InterfaceName);
+                String fullQualifiedInterfaceName = (thisApexTypeImplementor.InterfaceNamespacePrefix == null ? '' :  thisApexTypeImplementor.InterfaceNamespacePrefix + '.' )
+                        + thisApexTypeImplementor.InterfaceName;
+                TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(fullQualifiedInterfaceName);
                 SObjectType triggerHandlerSObjectType = triggerHandler.getSObjectType();
 
                 DiscoveryTriggerHandler thisDiscoveryTriggerHandler = sObjectTypeToDiscoveryTriggerHandler.get(triggerHandlerSObjectType);

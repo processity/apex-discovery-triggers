@@ -1,7 +1,7 @@
 /**
  * @author aidan@mantratech.uk
  * @date 20/11/2023
- * @description (if required)
+ * @description Adds 'Foo' to the end of the Account Name
  */
 
 public with sharing class AccountNameAddFoo implements BeforeInsert {
