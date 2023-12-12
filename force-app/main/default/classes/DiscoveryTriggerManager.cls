@@ -7,22 +7,39 @@
 
 public without sharing class DiscoveryTriggerManager {
 
+    private static String namespacePrefix;
+
+    public static List<String> interfaceNames {get {
+        if(interfaceNames == null) {
+            interfaceNames = new List<String>{
+                    BeforeInsert.class.getName(),
+                    BeforeUpdate.class.getName(),
+                    BeforeDelete.class.getName(),
+                    AfterInsert.class.getName(),
+                    AfterUpdate.class.getName(),
+                    AfterDelete.class.getName(),
+                    AfterUndelete.class.getName()
+            };
+            namespacePrefix = interfaceNames[0].substringBefore('.');
+            if(namespacePrefix != interfaceNames[0])  {
+                Integer start = namespacePrefix.length() + 1;
+                for(Integer i=0; i < interfaceNames.size(); i++) {
+                    interfaceNames[i] = interfaceNames[i].substring(start);
+                }
+            }
+        }
+        return interfaceNames;
+    } set;}
+
     @TestVisible
     private static List<ApexTypeImplementor> allImplementors = [
-            SELECT ClassName, InterfaceName
-            FROM ApexTypeImplementor 
-            WHERE InterfaceName IN (
-                    :BeforeInsert.class.getName(), 
-                    :BeforeUpdate.class.getName(),
-                    :BeforeDelete.class.getName(),
-                    :AfterInsert.class.getName(),
-                    :AfterUpdate.class.getName(),
-                    :AfterDelete.class.getName(),
-                    :AfterUndelete.class.getName()
-            )
+            SELECT ClassName, ClassNamespacePrefix, InterfaceName, InterfaceNamespacePrefix
+            FROM ApexTypeImplementor
+            WHERE InterfaceName IN :interfaceNames
+            AND InterfaceNamespacePrefix = :namespacePrefix
             AND ApexClass.IsValid = TRUE
             AND IsConcrete = TRUE
-            AND (NOT(ClassName LIKE : DiscoveryTriggerManagerTest.class.getName() + '.%')) 
+            AND (NOT(ClassName LIKE : DiscoveryTriggerManagerTest.class.getName() + '.%'))
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
     
@@ -37,8 +54,9 @@ public without sharing class DiscoveryTriggerManager {
 
             for(Integer i=0; i < allImplementorsSize; i++) {
                 ApexTypeImplementor thisApexTypeImplementor = allImplementors[i];
-                TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassName).newInstance();
-                TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceName);
+                TriggerHandler triggerHandler = (TriggerHandler)Type.forName(thisApexTypeImplementor.ClassNamespacePrefix, thisApexTypeImplementor.ClassName).newInstance();
+                TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceNamespacePrefix + '.' + thisApexTypeImplementor.InterfaceName);
+                SObjectType triggerHandlerSObjectType = triggerHandler.getSObjectType();
 
                 DiscoveryTriggerHandler thisDiscoveryTriggerHandler = sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
                 if(thisDiscoveryTriggerHandler == null) {
