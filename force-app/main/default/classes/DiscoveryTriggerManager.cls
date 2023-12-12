@@ -42,11 +42,12 @@ public without sharing class DiscoveryTriggerManager {
             AND (NOT(ClassName LIKE : DiscoveryTriggerManagerTest.class.getName() + '.%'))
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
-    
+
+
     private static Map<SObjectType, DiscoveryTriggerHandler> sObjectTypeToDiscoveryTriggerHandler;
-    
+
     public static DiscoveryTriggerHandler getInstance(SObjectType sObjectType) {
-        
+
         if(sObjectTypeToDiscoveryTriggerHandler == null) {
             sObjectTypeToDiscoveryTriggerHandler = new Map<SObjectType, DiscoveryTriggerHandler>();
 
@@ -58,11 +59,12 @@ public without sharing class DiscoveryTriggerManager {
                 TriggerOperation thisTriggerOperation = InterfaceNameToTriggerOperation.get(thisApexTypeImplementor.InterfaceNamespacePrefix + '.' + thisApexTypeImplementor.InterfaceName);
                 SObjectType triggerHandlerSObjectType = triggerHandler.getSObjectType();
 
-                DiscoveryTriggerHandler thisDiscoveryTriggerHandler = sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
+                DiscoveryTriggerHandler thisDiscoveryTriggerHandler = sObjectTypeToDiscoveryTriggerHandler.get(triggerHandlerSObjectType);
                 if(thisDiscoveryTriggerHandler == null) {
                     thisDiscoveryTriggerHandler = new DiscoveryTriggerHandler();
-                    sObjectTypeToDiscoveryTriggerHandler.put(sObjectType, thisDiscoveryTriggerHandler);
+                    sObjectTypeToDiscoveryTriggerHandler.put(triggerHandlerSObjectType, thisDiscoveryTriggerHandler);
                 }
+
                 thisDiscoveryTriggerHandler.addHandler(thisTriggerOperation, triggerHandler);
             }
 
@@ -70,7 +72,7 @@ public without sharing class DiscoveryTriggerManager {
                 thisDiscoveryTriggerHandler.sort();
             }
         }
-        
+
         return sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
     }
 }
