@@ -4,10 +4,12 @@
  * @description Entry point for the trigger framework. This factory class returns a DiscoveryTriggerHandler instance 
  * for a given SObjectType, using ApexTypeImplementor to discover all trigger handlers in the org.
  */
-
+// Field declarations cannot be at the start because the lazy-instantiated variables are required for the declarations
+@SuppressWarnings('PMD.FieldDeclarationsShouldBeAtStart')
 public without sharing class DiscoveryTriggerManager {
 
     private static String namespacePrefix;
+    private static String discoveryTriggerManagerTestClassName;
 
     public static List<String> interfaceNames {get {
         if(interfaceNames == null) {
@@ -26,8 +28,10 @@ public without sharing class DiscoveryTriggerManager {
                 for(Integer i=0; i < interfaceNames.size(); i++) {
                     interfaceNames[i] = interfaceNames[i].substring(start);
                 }
+                discoveryTriggerManagerTestClassName = DiscoveryTriggerManagerTest.class.getName().substring(start);
             } else {
                 namespacePrefix = null;
+                discoveryTriggerManagerTestClassName = DiscoveryTriggerManagerTest.class.getName();
             }
         }
         return interfaceNames;
@@ -41,7 +45,7 @@ public without sharing class DiscoveryTriggerManager {
             AND InterfaceNamespacePrefix = :namespacePrefix
             AND ApexClass.IsValid = TRUE
             AND IsConcrete = TRUE
-            AND (NOT(ClassName LIKE : DiscoveryTriggerManagerTest.class.getName() + '.%'))
+            AND (NOT ClassName LIKE :discoveryTriggerManagerTestClassName + '.%')
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
 
