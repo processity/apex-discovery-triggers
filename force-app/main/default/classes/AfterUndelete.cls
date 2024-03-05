@@ -4,5 +4,5 @@
  */
 
 public interface AfterUndelete {
-    void handleAfterUndelete(List<SObject> newList);
+    void afterUndelete(List<SObject> newList);
 }

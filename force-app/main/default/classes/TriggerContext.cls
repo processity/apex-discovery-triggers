@@ -18,25 +18,25 @@ public class TriggerContext {
     public void handleUsing(TriggerHandler handlerInstance) {
         switch on operation {
             when BEFORE_UPDATE {
-                ((BeforeUpdate)handlerInstance).handleBeforeUpdate(oldList, newList);
+                ((BeforeUpdate)handlerInstance).beforeUpdate(oldList, newList);
             }
             when BEFORE_INSERT {
-                ((BeforeInsert)handlerInstance).handleBeforeInsert(newList);
+                ((BeforeInsert)handlerInstance).beforeInsert(newList);
             }
             when BEFORE_DELETE {
-                ((BeforeDelete)handlerInstance).handleBeforeDelete(oldList);
+                ((BeforeDelete)handlerInstance).beforeDelete(oldList);
             }
             when AFTER_UPDATE {
-                ((AfterUpdate)handlerInstance).handleAfterUpdate(oldList, newList);
+                ((AfterUpdate)handlerInstance).afterUpdate(oldList, newList);
             }
             when AFTER_INSERT {
-                ((AfterInsert)handlerInstance).handleAfterInsert(newList);
+                ((AfterInsert)handlerInstance).afterInsert(newList);
             }
             when AFTER_DELETE {
-                ((AfterDelete)handlerInstance).handleAfterDelete(oldList);
+                ((AfterDelete)handlerInstance).afterDelete(oldList);
             }
             when AFTER_UNDELETE {
-                ((AfterUndelete)handlerInstance).handleAfterUndelete(newList);
+                ((AfterUndelete)handlerInstance).afterUndelete(newList);
             }
         }
     }

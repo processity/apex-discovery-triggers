@@ -66,31 +66,31 @@ public class DiscoveryTriggerManagerTest {
             return Account.SObjectType;
         }
 
-        public void handleBeforeInsert(List<SObject> newRecords) {
+        public void beforeInsert(List<SObject> newRecords) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.BEFORE_INSERT);
         }
 
-        public void handleBeforeUpdate(List<SObject> oldRecords, List<SObject> newRecords) {
+        public void beforeUpdate(List<SObject> oldRecords, List<SObject> newRecords) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.BEFORE_UPDATE);
         }
 
-        public void handleBeforeDelete(List<SObject> oldList) {
+        public void beforeDelete(List<SObject> oldList) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.BEFORE_DELETE);
         }
 
-        public void handleAfterInsert(List<SObject> newList) {
+        public void afterInsert(List<SObject> newList) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.AFTER_INSERT);
         }
 
-        public void handleAfterUpdate(List<SObject> oldList, List<SObject> newList) {
+        public void afterUpdate(List<SObject> oldList, List<SObject> newList) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.AFTER_UPDATE);
         }
 
-        public void handleAfterDelete(List<SObject> oldList) {
+        public void afterDelete(List<SObject> oldList) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.AFTER_DELETE);
         }
 
-        public void handleAfterUndelete(List<SObject> newList) {
+        public void afterUndelete(List<SObject> newList) {
             DiscoveryTriggerManagerTest.handlerRuns.add(TriggerOperation.AFTER_UNDELETE);
         }
     }
@@ -104,7 +104,7 @@ public class DiscoveryTriggerManagerTest {
             return Contact.SObjectType;
         }
 
-        public void handleBeforeInsert(List<SObject> newRecords) {
+        public void beforeInsert(List<SObject> newRecords) {
             DiscoveryTriggerManagerTest.handlerNames.add(TestHandlerContactOne.class.getName());
         }
     }
@@ -118,7 +118,7 @@ public class DiscoveryTriggerManagerTest {
             return Contact.SObjectType;
         }
 
-        public void handleBeforeInsert(List<SObject> newRecords) {
+        public void beforeInsert(List<SObject> newRecords) {
             DiscoveryTriggerManagerTest.handlerNames.add(TestHandlerContactTwo.class.getName());
         }
     }

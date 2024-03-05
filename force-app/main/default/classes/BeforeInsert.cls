@@ -4,5 +4,5 @@
  */
 
 public interface BeforeInsert extends TriggerHandler {
-    void handleBeforeInsert(List<SObject> newRecords);
+    void beforeInsert(List<SObject> newRecords);
 }
