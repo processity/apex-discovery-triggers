@@ -49,7 +49,6 @@ public without sharing class DiscoveryTriggerManager {
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
     ];
 
-
     private static Map<SObjectType, DiscoveryTriggerHandler> sObjectTypeToDiscoveryTriggerHandler;
 
     public static DiscoveryTriggerHandler getInstance(SObjectType sObjectType) {
@@ -82,5 +81,9 @@ public without sharing class DiscoveryTriggerManager {
         }
 
         return sObjectTypeToDiscoveryTriggerHandler.get(sObjectType);
+    }
+    
+    public static void handle() {
+        getInstance(Trigger.new?.getSObjectType() ?? Trigger.old.getSObjectType()).handle();
     }
 }
