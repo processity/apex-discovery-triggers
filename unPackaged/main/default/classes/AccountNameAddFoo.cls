@@ -12,10 +12,6 @@ public with sharing class AccountNameAddFoo implements BeforeInsert {
         }
     }
 
-    public Integer getOrder() {
-        return 0;
-    }
-    
     public SObjectType getSObjectType() {
         return Account.SObjectType;
     }
