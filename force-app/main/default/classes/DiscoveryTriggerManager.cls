@@ -37,13 +37,20 @@ public without sharing class DiscoveryTriggerManager {
         return interfaceNames;
     } set;}
 
+    // Note that we don't check ApexClass.IsValid. That would seem like a sensible precaution, but it does not indicate
+    // whether or not the Apex Class is valid in the sense of being code that can be compiled and run. 
+    // See https://developer.salesforce.com/docs/atlas.en-us.object_reference.meta/object_reference/sforce_api_objects_apexclass.htm
+    //
+    //   "IsValid indicates whether any dependent metadata has changed since the class was last compiled (true) or not (false). 
+    //    The default value is false."
+    //
+    // Ensuring that trigger handlers contain compilable and runnable code, is therefore left to users of the framework.
     @TestVisible
     private static List<ApexTypeImplementor> allImplementors = [
             SELECT ClassName, ClassNamespacePrefix, InterfaceName, InterfaceNamespacePrefix
             FROM ApexTypeImplementor
             WHERE InterfaceName IN :interfaceNames
             AND InterfaceNamespacePrefix = :namespacePrefix
-            AND ApexClass.IsValid = TRUE
             AND IsConcrete = TRUE
             AND (NOT ClassName LIKE :discoveryTriggerManagerTestClassName + '.%')
             ORDER BY ClassNamespacePrefix ASC, ClassName ASC
