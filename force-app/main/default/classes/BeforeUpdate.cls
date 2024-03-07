@@ -4,5 +4,5 @@
  */
 
 public interface BeforeUpdate extends TriggerHandler {
-    void beforeUpdate(List<SObject> oldRecords, List<SObject> newRecords);
+    void onBeforeUpdate(List<SObject> oldRecords, List<SObject> newRecords);
 }

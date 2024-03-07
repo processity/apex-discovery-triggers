@@ -9,16 +9,33 @@ Here is an example trigger implementation:
 
 ```apex
 public class MyTrigger implements BeforeInsert {
+    
+    public SObjectType getSObjectType() {
+        return Account.SObjectType;
+    }
+
+    public void onBeforeInsert(List<Account> newRecords) {
+        // do something
+    }
+}
+```
+
+If ordering is important, then you specify that with an extra interface. For a particular `SObjectType` and trigger 
+event the handlers are run in ascending order of the numbers they declare with `getOrder()`. The absence of `OrderedTriggerHandler`
+implies an order value of `0`.
+
+```apex
+public class MyTrigger implements BeforeInsert, OrderedTriggerHandler {
+    
+    public SObjectType getSObjectType() {
+        return Account.SObjectType;
+    }
 
     public Integer getOrder() {
-        return 0;
+        return 10;
     }
-
-    public Boolean canHandle(SObjectType type) {
-        return type == Account.SObjectType;
-    }
-
-    public void handleBeforeInsert(List<Account> newRecords) {
+    
+    public void onBeforeInsert(List<Account> newRecords) {
         // do something
     }
 }
@@ -31,3 +48,7 @@ trigger AccountTrigger on Account (before insert, before update, before delete, 
     DiscoveryTriggerManager.getInstance(Account.SObjectType).handle();
 }
 ```
+
+Note that this library loads all trigger events for all `SObjectType`s on first invocation and caches them in a static 
+variable. So, the performance profile will be a relatively slow start at the beginning of a transaction, then fast 
+performance for further triggers. 

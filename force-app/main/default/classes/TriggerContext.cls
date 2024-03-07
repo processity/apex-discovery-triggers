@@ -4,10 +4,9 @@
  */
 
 public class TriggerContext {
-
     private List<SObject> oldList;
     private List<SObject> newList;
-    public TriggerOperation operation {get; private set;}
+    public TriggerOperation operation { get; private set; }
 
     public TriggerContext(TriggerOperation operation, List<SObject> oldList, List<SObject> newList) {
         this.operation = operation;
@@ -18,25 +17,25 @@ public class TriggerContext {
     public void handleUsing(TriggerHandler handlerInstance) {
         switch on operation {
             when BEFORE_UPDATE {
-                ((BeforeUpdate)handlerInstance).beforeUpdate(oldList, newList);
+                ((BeforeUpdate) handlerInstance).onBeforeUpdate(oldList, newList);
             }
             when BEFORE_INSERT {
-                ((BeforeInsert)handlerInstance).beforeInsert(newList);
+                ((BeforeInsert) handlerInstance).onBeforeInsert(newList);
             }
             when BEFORE_DELETE {
-                ((BeforeDelete)handlerInstance).beforeDelete(oldList);
+                ((BeforeDelete) handlerInstance).onBeforeDelete(oldList);
             }
             when AFTER_UPDATE {
-                ((AfterUpdate)handlerInstance).afterUpdate(oldList, newList);
+                ((AfterUpdate) handlerInstance).onAfterUpdate(oldList, newList);
             }
             when AFTER_INSERT {
-                ((AfterInsert)handlerInstance).afterInsert(newList);
+                ((AfterInsert) handlerInstance).onAfterInsert(newList);
             }
             when AFTER_DELETE {
-                ((AfterDelete)handlerInstance).afterDelete(oldList);
+                ((AfterDelete) handlerInstance).onAfterDelete(oldList);
             }
             when AFTER_UNDELETE {
-                ((AfterUndelete)handlerInstance).afterUndelete(newList);
+                ((AfterUndelete) handlerInstance).onAfterUndelete(newList);
             }
         }
     }

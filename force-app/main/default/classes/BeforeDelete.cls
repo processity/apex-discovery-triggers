@@ -4,5 +4,5 @@
  */
 
 public interface BeforeDelete extends TriggerHandler {
-    void beforeDelete(List<SObject> oldList);
+    void onBeforeDelete(List<SObject> oldList);
 }

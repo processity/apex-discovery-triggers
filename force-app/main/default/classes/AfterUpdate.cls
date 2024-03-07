@@ -4,5 +4,5 @@
  */
 
 public interface AfterUpdate extends TriggerHandler {
-    void afterUpdate(List<SObject> oldList, List<SObject> newList);
+    void onAfterUpdate(List<SObject> oldList, List<SObject> newList);
 }

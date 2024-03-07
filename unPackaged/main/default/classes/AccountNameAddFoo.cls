@@ -6,7 +6,7 @@
 
 public with sharing class AccountNameAddFoo implements BeforeInsert {
     
-    public void beforeInsert(List<Account> newRecords) {
+    public void onBeforeInsert(List<Account> newRecords) {
         for (Account a : newRecords) {
             a.Name = a.Name + ' Foo';
         }

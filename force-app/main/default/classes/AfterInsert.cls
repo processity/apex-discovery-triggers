@@ -4,5 +4,5 @@
  */
 
 public interface AfterInsert extends TriggerHandler {
-    void afterInsert(List<SObject> newList);
+    void onAfterInsert(List<SObject> newList);
 }

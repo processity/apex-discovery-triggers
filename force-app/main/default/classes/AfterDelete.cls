@@ -4,5 +4,5 @@
  */
 
 public interface AfterDelete extends TriggerHandler {
-    void afterDelete(List<SObject> oldList);
+    void onAfterDelete(List<SObject> oldList);
 }
