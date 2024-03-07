@@ -56,7 +56,8 @@ public without sharing class DiscoveryTriggerManager {
             AND InterfaceNamespacePrefix = :namespacePrefix
             AND IsConcrete = TRUE
             AND (NOT ClassName LIKE :discoveryTriggerManagerTestClassName + '.%')
-        ORDER BY ClassNamespacePrefix ASC, ClassName ASC
+        WITH SYSTEM_MODE
+        ORDER BY ClassNamespacePrefix ASC, ClassName ASC 
     ];
 
     private static Map<SObjectType, DiscoveryTriggerHandler> sObjectTypeToDiscoveryTriggerHandler;
