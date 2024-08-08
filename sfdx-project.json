@@ -5,7 +5,7 @@
       "versionNumber": "0.1.0.NEXT",
       "path": "force-app",
       "default": true,
-      "package": "Discovery Triggers",
+      "package": "Apex Discovery Triggers",
       "versionDescription": "An Apex Trigger Framework without a table of triggers. It uses ApexTypeImplementor to find trigger handlers"
     },
     {
@@ -13,12 +13,12 @@
       "default": false
     }
   ],
-  "name": "discovery-triggers",
+  "name": "apex-discovery-triggers",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "60.0",
   "packageAliases": {
-    "Discovery Triggers": "0HoWS00000008SD0AY",
-    "Discovery Triggers@0.1.0-1": "04tWS000000HTQbYAO"
+    "Apex Discovery Triggers": "0HoWS00000008SD0AY",
+    "Apex Discovery Triggers@0.1.0-1": "04tWS000000HTQbYAO"
   }
 }

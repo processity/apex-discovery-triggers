@@ -58,7 +58,7 @@ performance for further triggers.
 Either:
 
  - Paste this onto the end of your My Domain URL: /packaging/installPackage.apexp?p0=04tWS000000HTQbYAO
- - Include in your SFDX project as "Discovery Triggers": "04tWS000000HTQbYAO"
+ - Include in your SFDX project as "Apex Discovery Triggers": "04tWS000000HTQbYAO"
 
 ## Examples
 
