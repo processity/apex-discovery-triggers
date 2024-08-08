@@ -2,7 +2,7 @@
 
 This trigger handler framework discovers classes that implement trigger handlers by querying `ApexTypeImplementor`.
 
-This provides a slim trigger framework, with ordering, that does not require custom metadata or any other type of table
+That provides a slim trigger framework, with ordering, that does not require custom metadata or any other type of table
 to drive the triggers. 
 
 Here is an example trigger implementation:
@@ -52,3 +52,14 @@ trigger AccountTrigger on Account (before insert, before update, before delete, 
 Note that this library loads all trigger events for all `SObjectType`s on first invocation and caches them in a static 
 variable. So, the performance profile will be a relatively slow start at the beginning of a transaction, then fast 
 performance for further triggers. 
+
+## Installation
+
+Either:
+
+ - Paste this onto the end of your My Domain URL: /packaging/installPackage.apexp?p0=04tWS000000HTQbYAO
+ - Include in your SFDX project as "Discovery Triggers": "04tWS000000HTQbYAO"
+
+## Examples
+
+See the [unPackaged](unPackaged) directory for a working example trigger.
